@@ -1,0 +1,35 @@
+{% extends "store/main.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            <h2>Categories</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{% url 'store' %}">All Products</a></li>
+                {% for category in categories %}
+                    <li class="list-group-item">
+                        <a href="{% url 'product_list_by_category' category.id %}">{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <h2>{{ category.name }} Products</h2>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img src="{{ product.imageURL }}" class="card-img-top" alt="{{ product.name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">${{ product.price }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No products available in this category.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

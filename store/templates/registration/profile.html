@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>Welcome, {{ user.username }}</h1>
+            <p>Email: {{ user.email }}</p>
+        </div>
+        <div class="profile-content">
+            <h2>Profile Details</h2>
+            <div class="profile-details">
+                <div class="detail">
+                    <label>Username:</label>
+                    <p>{{ user.username }}</p>
+                </div>
+                <div class="detail">
+                    <label>Email:</label>
+                    <p>{{ user.email }}</p>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-warning">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

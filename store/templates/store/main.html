@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Ecommerce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+    <script type="text/javascript">
+        var user = '{{ request.user }}';
+        
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getToken('csrftoken');
+
+        function getCookie(name) {
+            var cookieArr = document.cookie.split(";");
+            for (var i = 0; i < cookieArr.length; i++) {
+                var cookiePair = cookieArr[i].split("=");
+                if (name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null;
+        }
+
+        var cart = JSON.parse(getCookie('cart'));
+
+        if (cart == undefined) {
+            cart = {};
+            console.log("cart created");
+            document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/";
+        }
+
+        console.log('Cart:', cart);
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-blue bg-blue" style="margin-left: 50px;">
+        <h2 class="navbar-brand" href="{% url 'store' %}">MyEcommerce</h2>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>   
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto" style="margin-left: 300px;">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                            <a class="dropdown-item" href="{% url 'product_list_by_category' category.id %}">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'store' %}">Products <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active"> 
+                    <a class="nav-link" href="{% url 'profile' %}">Profile <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'orders' %}">Orders <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            
+            <div class="form-inline my-2 my-lg-0" style="margin-right: 50px;">
+                {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-warning">Logout</button>
+                </form>
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'store' %}" class="btn btn-warning">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-info ml-2">Register</a>
+                {% endif %}
+                <a href="{% url 'cart' %}">
+                    <img id="cart-icon" src="{% static 'images/cart.jpg' %}">
+                </a>
+                <p id="cart-total">{{ cartItems }}</p>
+            </div>
+        </div>
+    </nav>
+    <hr>
+    <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
